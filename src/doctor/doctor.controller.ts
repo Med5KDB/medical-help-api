@@ -17,6 +17,11 @@ export class DoctorController {
     return this.doctorService.findOne(args);
   }
 
+  @Get()
+  doctors(@Body() args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
+    return this.doctorService.findMany(args);
+  }
+
   @Put(':id')
   updateDoctor(
     @Param('id') id: string,

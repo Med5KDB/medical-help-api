@@ -69,9 +69,9 @@ model Doctor {
   id                 String            @id @default(auto()) @map("_id") @db.ObjectId
   firstname          String
   lastname           String
-  username           String
+  username           String            @unique
   password           String
-  email              String?           @unique
+  email              String?
   phoneNumber        String?
   sexe               Sexe
   speciality         String
