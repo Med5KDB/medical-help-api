@@ -9,11 +9,11 @@ export class DoctorService {
     const doctor = this.prisma.doctor.create({ data });
     return doctor;
   }
-  updateOne(
-    where: Prisma.DoctorWhereUniqueInput,
-    args: Prisma.DoctorUpdateArgs,
-  ): Promise<Doctor> {
-    const updatedDoctor = this.prisma.doctor.update({ where, data: args.data });
+  updateOne(args: Prisma.DoctorUpdateArgs): Promise<Doctor> {
+    const updatedDoctor = this.prisma.doctor.update({
+      where: args.where,
+      data: args.data,
+    });
     return updatedDoctor;
   }
   findOne(args: Prisma.DoctorFindUniqueArgs): Promise<Doctor | null> {

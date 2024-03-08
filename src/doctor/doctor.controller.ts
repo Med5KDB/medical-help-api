@@ -25,9 +25,9 @@ export class DoctorController {
   @Put(':id')
   updateDoctor(
     @Param('id') id: string,
-    @Body() args: Prisma.DoctorUpdateArgs,
+    @Body() data: Prisma.DoctorUpdateArgs['data'],
   ): Promise<Doctor> {
-    const where: Prisma.DoctorWhereUniqueInput = { id: id };
-    return this.doctorService.updateOne(where, args);
+    const args: Prisma.DoctorUpdateArgs = { where: { id }, data };
+    return this.doctorService.updateOne(args);
   }
 }
