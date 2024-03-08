@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Sexe {
+  MALE
+  FEMALE
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+}
+
+enum ValueType {
+  NUMBER
+  BOOLEAN
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+}
+
+type FormField {
+  id        String
+  name      String
+  value     String
+  category  String
+  valueType ValueType
+}
+
+type MedicalRecord {
+  id        String
+  formField FormField
+}
+
+type Time {
+  hour   Int
+  minute Int
+}
+
+type AvailabilitySlot {
+  startTime Time
+  endTime   Time
+}
+
+type TimeoffPeriod {
+  startDate String
+  endDate   String
+}
+
+type Availability {
+  MONDAY         AvailabilitySlot[]
+  TUESDAY        AvailabilitySlot[]
+  WEDNESDAY      AvailabilitySlot[]
+  THURSDAY       AvailabilitySlot[]
+  FRIDAY         AvailabilitySlot[]
+  SATURDAY       AvailabilitySlot[]
+  SUNDAY         AvailabilitySlot[]
+  timeOffPeriods TimeoffPeriod[]
+}
+
+model Doctor {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  firstname          String
+  lastname           String
+  username           String
+  password           String
+  email              String?           @unique
+  phoneNumber        String?
+  sexe               Sexe
+  speciality         String
+  medicalAssistant   MedicalAssistant? @relation(fields: [medicalAssistantId], references: [id])
+  medicalAssistantId String?           @db.ObjectId
+  // hospital           Hospital        @relation(fields: [hospitalId], references: [id])
+  // hospitalId         String            @db.ObjectId
+}
+
+model Patient {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  firstname     String
+  lastname      String
+  birthDate     DateTime
+  maritalStatus MaritalStatus
+  occupation    String
+  address       String
+  medicalRecord MedicalRecord
+}
+
+model MedicalAssistant {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstname String
+  lastname  String
+  username  String
+  Doctor    Doctor[]
+}
+
+model Hospital {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  address     String
+  phoneNumber String
+  // Doctor      Doctor[]
+}
