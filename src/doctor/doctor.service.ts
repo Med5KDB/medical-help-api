@@ -5,20 +5,20 @@ import { PrismaService } from 'src/lib/prisma.service';
 @Injectable()
 export class DoctorService {
   constructor(private prisma: PrismaService) {}
-  createDoctor(data: Prisma.DoctorCreateInput): Promise<Doctor> {
-    const doctor = this.prisma.doctor.create({ data });
+  async createDoctor(data: Prisma.DoctorCreateInput): Promise<Doctor> {
+    const doctor = await this.prisma.doctor.create({ data });
     return doctor;
   }
-  updateOne(args: Prisma.DoctorUpdateArgs): Promise<Doctor> {
-    const updatedDoctor = this.prisma.doctor.update({
+  async updateOne(args: Prisma.DoctorUpdateArgs): Promise<Doctor> {
+    const updatedDoctor = await this.prisma.doctor.update({
       where: args.where,
       data: args.data,
     });
     return updatedDoctor;
   }
-  findOne(args: Prisma.DoctorFindUniqueArgs): Promise<Doctor | null> {
+  async findOne(args: Prisma.DoctorFindUniqueArgs): Promise<Doctor | null> {
     const { id } = args.where;
-    const doctor = this.prisma.doctor.findUnique({
+    const doctor = await this.prisma.doctor.findUnique({
       where: { id },
     });
     if (!doctor) {
@@ -27,8 +27,12 @@ export class DoctorService {
     return doctor;
   }
 
-  findMany(args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
-    const doctors = this.prisma.doctor.findMany(args);
+  async findMany(args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
+    const doctors = await this.prisma.doctor.findMany(args);
     return doctors;
+  }
+  async deleteOne(args: Prisma.DoctorDeleteArgs): Promise<{ id: string }> {
+    await this.prisma.doctor.delete({ where: args.where });
+    return { id: args.where.id };
   }
 }

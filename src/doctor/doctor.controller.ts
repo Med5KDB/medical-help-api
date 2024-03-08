@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Doctor, Prisma } from '@prisma/client';
 
@@ -12,22 +20,27 @@ export class DoctorController {
   }
 
   @Get(':id')
-  doctor(@Param('id') id: string): Promise<Doctor | null> {
+  async doctor(@Param('id') id: string): Promise<Doctor | null> {
     const args: Prisma.DoctorFindUniqueArgs = { where: { id } };
-    return this.doctorService.findOne(args);
+    return await this.doctorService.findOne(args);
   }
 
   @Get()
-  doctors(@Body() args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
-    return this.doctorService.findMany(args);
+  async doctors(@Body() args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
+    return await this.doctorService.findMany(args);
   }
 
   @Put(':id')
-  updateDoctor(
+  async updateDoctor(
     @Param('id') id: string,
     @Body() data: Prisma.DoctorUpdateArgs['data'],
   ): Promise<Doctor> {
     const args: Prisma.DoctorUpdateArgs = { where: { id }, data };
-    return this.doctorService.updateOne(args);
+    return await this.doctorService.updateOne(args);
+  }
+  @Delete(':id')
+  async deleteDoctor(@Param('id') id: string): Promise<{ id: string }> {
+    const args: Prisma.DoctorDeleteArgs = { where: { id } };
+    return await this.doctorService.deleteOne(args);
   }
 }
