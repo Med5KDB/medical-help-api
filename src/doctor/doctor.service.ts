@@ -1,38 +1,79 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Doctor, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
 
 @Injectable()
 export class DoctorService {
+  private readonly logger = new Logger(DoctorService.name);
   constructor(private prisma: PrismaService) {}
   async createDoctor(data: Prisma.DoctorCreateInput): Promise<Doctor> {
-    const doctor = await this.prisma.doctor.create({ data });
-    return doctor;
+    try {
+      const doctor = await this.prisma.doctor.create({ data });
+      return doctor;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `Failed to create the Doctor because of: ${error}`,
+      );
+    }
   }
   async updateOne(args: Prisma.DoctorUpdateArgs): Promise<Doctor> {
-    const updatedDoctor = await this.prisma.doctor.update({
-      where: args.where,
-      data: args.data,
-    });
-    return updatedDoctor;
+    try {
+      const updatedDoctor = await this.prisma.doctor.update({
+        where: args.where,
+        data: args.data,
+      });
+      return updatedDoctor;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `Failed to update the Doctor with the ID ${args.where.id} due to: ${error}`,
+      );
+    }
   }
   async findOne(args: Prisma.DoctorFindUniqueArgs): Promise<Doctor | null> {
-    const { id } = args.where;
-    const doctor = await this.prisma.doctor.findUnique({
-      where: { id },
-    });
-    if (!doctor) {
-      throw new NotFoundException(`Doctor with ID ${id} not found`);
+    try {
+      const { id } = args.where;
+      const doctor = await this.prisma.doctor.findUnique({
+        where: { id },
+      });
+      if (!doctor) {
+        throw new NotFoundException(`Doctor with ID ${id} not found`);
+      }
+      return doctor;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `Failed to fetch the Doctor with the ID ${args.where.id}`,
+      );
     }
-    return doctor;
   }
 
   async findMany(args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
-    const doctors = await this.prisma.doctor.findMany(args);
-    return doctors;
+    try {
+      const doctors = await this.prisma.doctor.findMany(args);
+      return doctors;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `List doctors admin failed due to ${error}`,
+      );
+    }
   }
   async deleteOne(args: Prisma.DoctorDeleteArgs): Promise<{ id: string }> {
-    await this.prisma.doctor.delete({ where: args.where });
-    return { id: args.where.id };
+    try {
+      await this.prisma.doctor.delete({ where: args.where });
+      return { id: args.where.id };
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(
+        `The deletion of the Doctor with the ID ${args.where.id} has failed due to: ${error}`,
+      );
+    }
   }
 }
