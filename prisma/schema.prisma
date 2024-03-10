@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Sexe {
+enum Sex {
   MALE
   FEMALE
 }
@@ -73,7 +73,7 @@ model Doctor {
   password           String
   email              String?
   phoneNumber        String?
-  sexe               Sexe
+  sex                Sex
   speciality         String
   medicalAssistant   MedicalAssistant? @relation(fields: [medicalAssistantId], references: [id])
   medicalAssistantId String?           @db.ObjectId
@@ -89,6 +89,7 @@ model Patient {
   maritalStatus MaritalStatus
   occupation    String
   address       String
+  phoneNumber   String
   medicalRecord MedicalRecord
 }
 
