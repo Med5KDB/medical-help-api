@@ -82,15 +82,16 @@ model Doctor {
 }
 
 model Patient {
-  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
   firstname     String
   lastname      String
   birthDate     DateTime
   maritalStatus MaritalStatus
-  occupation    String
+  occupation    String?
+  // sex           Sex
   address       String
   phoneNumber   String
-  medicalRecord MedicalRecord
+  medicalRecord MedicalRecord?
 }
 
 model MedicalAssistant {
