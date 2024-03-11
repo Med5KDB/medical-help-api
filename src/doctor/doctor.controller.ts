@@ -6,9 +6,12 @@ import {
   Param,
   Put,
   Delete,
+  Query,
+  Res,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Doctor, Prisma } from '@prisma/client';
+import { Response } from 'express';
 
 @Controller('doctor')
 export class DoctorController {
@@ -26,8 +29,28 @@ export class DoctorController {
   }
 
   @Get()
-  async doctors(@Body() args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
-    return await this.doctorService.findMany(args);
+  async doctors(
+    // @Query('filter') filter: Prisma.DoctorWhereInput,
+    @Query('sort') sort: string,
+    @Query('range') range: string,
+    @Res() response: Response,
+  ): Promise<Doctor[]> {
+    const parsedSort = JSON.parse(sort).map((item: string) => {
+      const [field, order] = item.split(',');
+      return { [field]: order };
+    });
+    const cleanedRange = range.replace('[', '').replace(']', '');
+
+    const splittedRange = cleanedRange.split(',');
+    const [start, end] = splittedRange;
+    const rangeObj = { skip: parseInt(start), take: parseInt(end) };
+
+    const doctors = await this.doctorService.findMany(parsedSort, rangeObj);
+    response.set(
+      'Content-Range',
+      `doctors 0-${doctors.length}/${doctors.length}`,
+    );
+    return doctors;
   }
 
   @Put(':id')

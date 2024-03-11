@@ -7,10 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Sex {
-  MALE
-  FEMALE
-}
+// enum Sex {
+//   MALE
+//   FEMALE
+// }
 
 enum MaritalStatus {
   SINGLE
@@ -73,7 +73,7 @@ model Doctor {
   password           String
   email              String?
   phoneNumber        String?
-  sex                Sex
+  // sex                Sex
   speciality         String
   medicalAssistant   MedicalAssistant? @relation(fields: [medicalAssistantId], references: [id])
   medicalAssistantId String?           @db.ObjectId

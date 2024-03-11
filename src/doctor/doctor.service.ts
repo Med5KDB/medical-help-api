@@ -54,14 +54,21 @@ export class DoctorService {
     }
   }
 
-  async findMany(args: Prisma.DoctorFindManyArgs): Promise<Doctor[]> {
+  async findMany(
+    orderBy: Prisma.DoctorOrderByWithRelationInput,
+    range: { skip?: number; take?: number },
+  ): Promise<Doctor[]> {
     try {
-      const doctors = await this.prisma.doctor.findMany(args);
+      const doctors = await this.prisma.doctor.findMany({
+        orderBy: orderBy,
+        skip: range.skip,
+        take: range.take,
+      });
       return doctors;
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        `List doctors admin failed due to ${error}`,
+        `List doctors failed due to ${error}`,
       );
     }
   }
