@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   Res,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { DoctorService } from './doctor.service';
 import { Doctor, Prisma } from '@prisma/client';
@@ -30,27 +31,42 @@ export class DoctorController {
 
   @Get()
   async doctors(
-    // @Query('filter') filter: Prisma.DoctorWhereInput,
     @Query('sort') sort: string,
     @Query('range') range: string,
+    @Query('filter') filter: string,
     @Res() response: Response,
   ): Promise<Doctor[]> {
-    const parsedSort = JSON.parse(sort).map((item: string) => {
-      const [field, order] = item.split(',');
-      return { [field]: order };
-    });
-    const cleanedRange = range.replace('[', '').replace(']', '');
+    try {
+      const parsedSort = JSON.parse(sort);
+      const parsedRange = JSON.parse(range);
+      const parsedFilter = JSON.parse(filter);
 
-    const splittedRange = cleanedRange.split(',');
-    const [start, end] = splittedRange;
-    const rangeObj = { skip: parseInt(start), take: parseInt(end) };
+      // Ensure that sort is an array
+      const sortArray = Array.isArray(parsedSort) ? parsedSort : [parsedSort];
 
-    const doctors = await this.doctorService.findMany(parsedSort, rangeObj);
-    response.set(
-      'Content-Range',
-      `doctors 0-${doctors.length}/${doctors.length}`,
-    );
-    return doctors;
+      const field = sortArray[0];
+      const order = sortArray[1];
+
+      const skip = parsedRange[0];
+      const take = parsedRange[1];
+
+      const { doctors, count } = await this.doctorService.findMany(
+        { field, order },
+        { skip, take },
+        parsedFilter,
+      );
+      const length = doctors.length;
+      response.set(
+        'Content-Range',
+        `doctors ${skip}-${skip + length}/${count}`,
+      );
+
+      return doctors;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `List doctors failed due to ${error}`,
+      );
+    }
   }
 
   @Put(':id')
