@@ -67,16 +67,23 @@ export class PatientService {
   }
 
   async findMany(
-    orderBy: Prisma.PatientOrderByWithRelationInput,
-    range: { skip?: number; take?: number },
-  ): Promise<Patient[]> {
+    sort: { field: string; order: 'asc' | 'desc' },
+    range: { skip: number; take: number },
+    filter: any,
+  ): Promise<{ patients: Patient[]; count: number }> {
     try {
-      const patients = await this.prisma.patient.findMany({
-        orderBy: orderBy,
-        skip: range.skip,
-        take: range.take,
-      });
-      return patients;
+      const field = sort.field;
+      const value = sort.order.toLowerCase() as 'asc' | 'desc';
+      const [patients, count] = await Promise.all([
+        this.prisma.patient.findMany({
+          orderBy: { [field]: value },
+          skip: range.skip,
+          take: range.take,
+          where: filter,
+        }),
+        this.prisma.patient.count(),
+      ]);
+      return { patients, count };
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
