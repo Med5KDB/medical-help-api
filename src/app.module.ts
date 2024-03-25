@@ -4,10 +4,12 @@ import { AppService } from './app.service';
 import { DoctorModule } from './doctor/doctor.module';
 import { PatientModule } from './patient/patient.module';
 import { MedicalAssistantModule } from './medical-assistant/medical-assistant.module';
+import { HospitalModule } from './hospital/hospital.module';
+import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
-  imports: [DoctorModule, PatientModule, MedicalAssistantModule],
+  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
