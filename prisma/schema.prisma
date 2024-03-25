@@ -66,17 +66,16 @@ type Availability {
 }
 
 model Doctor {
-  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
-  firstname          String
-  lastname           String
-  username           String            @unique
-  password           String
-  email              String?
-  phoneNumber        String?
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  firstname        String
+  lastname         String
+  username         String             @unique
+  password         String
+  email            String?
+  phoneNumber      String?
   // sex                Sex
-  speciality         String
-  medicalAssistant   MedicalAssistant? @relation(fields: [medicalAssistantId], references: [id])
-  medicalAssistantId String?           @db.ObjectId
+  speciality       String
+  medicalAssistant MedicalAssistant[]
   // hospital           Hospital        @relation(fields: [hospitalId], references: [id])
   // hospitalId         String            @db.ObjectId
 }
@@ -95,11 +94,15 @@ model Patient {
 }
 
 model MedicalAssistant {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstname String
-  lastname  String
-  username  String
-  Doctor    Doctor[]
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstname   String
+  lastname    String
+  username    String
+  password    String
+  phoneNumber String?
+  email       String?
+  Doctor      Doctor  @relation(fields: [doctorId], references: [id])
+  doctorId    String  @db.ObjectId
 }
 
 model Hospital {

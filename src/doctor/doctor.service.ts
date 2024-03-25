@@ -49,7 +49,7 @@ export class DoctorService {
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        `Failed to fetch the Doctor with the ID ${args.where.id}`,
+        `Failed to fetch the Doctor with the ID ${args.where.id} due to ${error}`,
       );
     }
   }
@@ -57,7 +57,7 @@ export class DoctorService {
   async findMany(
     sort: { field: string; order: 'asc' | 'desc' },
     range: { skip: number; take: number },
-    filter: any,
+    filter: Prisma.DoctorWhereInput,
   ): Promise<{ doctors: Doctor[]; count: number }> {
     try {
       // const { field, order } = sort;
