@@ -35,7 +35,7 @@ export class DoctorController {
     @Query('range') range: string,
     @Query('filter') filter: string,
     @Res() response: Response,
-  ): Promise<Doctor[]> {
+  ) {
     try {
       const parsedSort = JSON.parse(sort);
       const parsedRange = JSON.parse(range);
@@ -61,7 +61,7 @@ export class DoctorController {
         `doctors ${skip}-${skip + length}/${count}`,
       );
 
-      return doctors;
+      response.json(doctors);
     } catch (error) {
       throw new InternalServerErrorException(
         `List doctors failed due to ${error}`,
@@ -80,6 +80,7 @@ export class DoctorController {
   @Delete(':id')
   async deleteDoctor(@Param('id') id: string): Promise<{ id: string }> {
     const args: Prisma.DoctorDeleteArgs = { where: { id } };
-    return await this.doctorService.deleteOne(args);
+    const deletedDoctor = await this.doctorService.deleteOne(args);
+    return deletedDoctor;
   }
 }

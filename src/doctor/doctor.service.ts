@@ -67,7 +67,7 @@ export class DoctorService {
         this.prisma.doctor.findMany({
           orderBy: { [field]: value },
           skip: range.skip,
-          take: range.take - range.skip,
+          take: range.take - range.skip + 1,
           where: filter,
         }),
         this.prisma.doctor.count(),
