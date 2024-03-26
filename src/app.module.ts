@@ -8,7 +8,7 @@ import { HospitalModule } from './hospital/hospital.module';
 import { MedicineModule } from './medicine/medicine.module';
 
 @Module({
-  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule],
+  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule, HospitalModule],
   controllers: [AppController],
   providers: [AppService],
 })
