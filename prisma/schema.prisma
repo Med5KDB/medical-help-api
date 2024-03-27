@@ -45,8 +45,10 @@ type Time {
 }
 
 type AvailabilitySlot {
-  startTime Time
-  endTime   Time
+  startTime            Time
+  endTime              Time
+  appointmentTypes     AppointmentType[]
+  appointmentReasonIds String[]
 }
 
 type TimeoffPeriod {
@@ -66,18 +68,20 @@ type Availability {
 }
 
 model Doctor {
-  id               String             @id @default(auto()) @map("_id") @db.ObjectId
-  firstname        String
-  lastname         String
-  username         String             @unique
-  password         String
-  email            String?
-  phoneNumber      String?
+  id                      String                    @id @default(auto()) @map("_id") @db.ObjectId
+  firstname               String
+  lastname                String
+  username                String                    @unique
+  password                String
+  email                   String?
+  phoneNumber             String?
   // sex                Sex
-  speciality       String
-  medicalAssistant MedicalAssistant[]
-  // hospital           Hospital        @relation(fields: [hospitalId], references: [id])
-  // hospitalId         String            @db.ObjectId
+  speciality              String
+  medicalAssistant        MedicalAssistant[]
+  hospital                Hospital                  @relation(fields: [hospitalId], references: [id])
+  hospitalId              String                    @db.ObjectId
+  AppointmentReasonDoctor AppointmentReasonDoctor[]
+  Appointment             Appointment[]
 }
 
 model Patient {
@@ -91,6 +95,7 @@ model Patient {
   address       String
   phoneNumber   String
   medicalRecord MedicalRecord?
+  Appointment   Appointment[]
 }
 
 model MedicalAssistant {
@@ -106,11 +111,11 @@ model MedicalAssistant {
 }
 
 model Hospital {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   address     String
   phoneNumber String
-  // Doctor      Doctor[]
+  Doctor      Doctor[]
 }
 
 model Medicine {
@@ -120,4 +125,87 @@ model Medicine {
   // price       Float
   // quantity    Int
   // category    String
+}
+
+enum AppointmentType {
+  IN_PERSON
+  VIDEO_CALL
+}
+
+enum AppointmentStatus {
+  PENDING
+  SCHEDULED
+  CANCELED
+  COMPLETED
+  IN_PROGRESS
+}
+
+model AppointmentReasonDoctor {
+  id                  String            @id @default(auto()) @map("_id") @db.ObjectId
+  appointmentReason   AppointmentReason @relation(fields: [appointmentReasonId], references: [id])
+  appointmentReasonId String            @db.ObjectId
+  doctor              Doctor            @relation(fields: [doctorId], references: [id])
+  doctorId            String            @db.ObjectId
+}
+
+model AppointmentReason {
+  id                       String                    @id @default(auto()) @map("_id") @db.ObjectId
+  name                     String                    @unique
+  description              String?
+  price                    Float
+  defaultDuration          Int?
+  appointmentTypes         AppointmentType[]
+  appointments             Appointment[]
+  appointmentReasonsDoctor AppointmentReasonDoctor[]
+}
+
+type PrescriptionMedication {
+  name     String
+  posology String
+}
+
+type PrescriptionMedicalRest {
+  startDate DateTime?
+  endDate   DateTime?
+}
+
+type Prescription {
+  type        PrescriptionType
+  description String?
+  note        String?
+  medications PrescriptionMedication[]
+  medicalRest PrescriptionMedicalRest?
+  createdAt   DateTime                 @default(now())
+}
+
+model Appointment {
+  id                  String             @id @default(auto()) @map("_id") @db.ObjectId
+  date                DateTime
+  endDate             DateTime?
+  patient             Patient?           @relation(fields: [patientId], references: [id])
+  patientId           String             @db.ObjectId
+  appointmentType     AppointmentType
+  observations        String?
+  diagnostic          String?
+  doctor              Doctor             @relation(fields: [doctorId], references: [id])
+  doctorId            String             @db.ObjectId
+  status              AppointmentStatus  @default(SCHEDULED)
+  appointmentReason   AppointmentReason? @relation(fields: [appointmentReasonId], references: [id])
+  appointmentReasonId String?            @db.ObjectId
+  notes               AppointmentNote[]
+  prescriptions       Prescription[]
+  preConsultationInfo String?
+}
+
+type AppointmentNote {
+  label             String?
+  treatmentDuration Int?
+  treatment         String?
+  observations      String
+}
+
+enum PrescriptionType {
+  MEDICATION
+  RADIOGRAPHY
+  MEDICAL_CERTIFICATE
 }
