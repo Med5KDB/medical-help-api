@@ -19,24 +19,39 @@ enum MaritalStatus {
   WIDOWED
 }
 
-enum ValueType {
+enum FormFieldValueType {
+  TEXT
   NUMBER
   BOOLEAN
+  DATE
   SINGLE_CHOICE
   MULTIPLE_CHOICE
 }
 
-type FormField {
-  id        String
-  name      String
-  value     String
-  category  String
-  valueType ValueType
+// type FormField {
+//   id           String
+//   key          String
+//   name         String
+//   category     String
+//   FormFieldValueType    FormFieldValueType
+//   isCalculated Boolean   @default(false)
+// }
+
+model FormFieldValue {
+  id              String             @id @default(auto()) @map("_id") @db.ObjectId
+  FormFieldkey    String
+  value           FormFieldValueType
+  MedicalRecord   MedicalRecord?     @relation(fields: [medicalRecordId], references: [id])
+  medicalRecordId String?            @db.ObjectId
 }
 
-type MedicalRecord {
-  id        String
-  formField FormField
+model MedicalRecord {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  formFieldValue FormFieldValue[]
+  patient        Patient          @relation(fields: [patientId], references: [id])
+  patientId      String           @db.ObjectId
+  createdAt      DateTime         @default(now())
+  // updatedAt  DateTime         @updatedAt
 }
 
 type Time {
@@ -81,7 +96,7 @@ model Doctor {
 }
 
 model Patient {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
   firstname     String
   lastname      String
   birthDate     DateTime
@@ -90,7 +105,8 @@ model Patient {
   // sex           Sex
   address       String
   phoneNumber   String
-  medicalRecord MedicalRecord?
+
+  MedicalRecord MedicalRecord[]
 }
 
 model MedicalAssistant {
@@ -101,8 +117,8 @@ model MedicalAssistant {
   password    String
   phoneNumber String?
   email       String?
-  Doctor      Doctor  @relation(fields: [doctorId], references: [id])
-  doctorId    String  @db.ObjectId
+  Doctor      Doctor? @relation(fields: [doctorId], references: [id])
+  doctorId    String? @db.ObjectId
 }
 
 model Hospital {
