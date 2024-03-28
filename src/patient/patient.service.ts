@@ -13,7 +13,9 @@ export class PatientService {
   constructor(private prisma: PrismaService) {}
   async createPatient(data: Prisma.PatientCreateInput): Promise<Patient> {
     try {
-      const patient = await this.prisma.patient.create({ data });
+      const patient = await this.prisma.patient.create({
+        data: { ...data, birthDate: new Date(data.birthDate).toISOString() },
+      });
       return patient;
     } catch (error) {
       this.logger.error(error);
