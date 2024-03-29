@@ -6,11 +6,12 @@ import {
 } from '@nestjs/common';
 import { Doctor, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
+import { omit } from 'lodash';
 
 @Injectable()
 export class DoctorService {
   private readonly logger = new Logger(DoctorService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async createDoctor(data: Prisma.DoctorCreateInput): Promise<Doctor> {
     try {
       const doctor = await this.prisma.doctor.create({ data });
@@ -26,7 +27,7 @@ export class DoctorService {
     try {
       const updatedDoctor = await this.prisma.doctor.update({
         where: args.where,
-        data: args.data,
+        data: omit(args.data, 'id'),
       });
       return updatedDoctor;
     } catch (error) {

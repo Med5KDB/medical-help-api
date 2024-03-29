@@ -6,6 +6,10 @@ import {
 } from '@nestjs/common';
 import { Hospital, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
+import { omit } from 'lodash';
+
+
+
 
 @Injectable()
 export class HospitalService {
@@ -22,11 +26,13 @@ export class HospitalService {
       );
     }
   }
+
   async updateOne(args: Prisma.HospitalUpdateArgs): Promise<Hospital> {
     try {
+
       const updatedHospital = await this.prisma.hospital.update({
         where: args.where,
-        data: args.data,
+        data: omit(args.data, 'id'),
       });
       return updatedHospital;
     } catch (error) {

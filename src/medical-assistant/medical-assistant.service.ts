@@ -6,11 +6,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/lib/prisma.service';
 import { MedicalAssistant, Prisma } from '@prisma/client';
+import { omit } from 'lodash';
 
 @Injectable()
 export class MedicalAssistantService {
   private readonly logger = new Logger(MedicalAssistantService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async findMany(
     sort: { field: string; order: 'asc' | 'desc' },
     range: { skip: number; take: number },
@@ -80,7 +81,7 @@ export class MedicalAssistantService {
       const updatedMedicalAssistant = await this.prisma.medicalAssistant.update(
         {
           where: args.where,
-          data: args.data,
+          data: omit(args.data, 'id'),
         },
       );
       return updatedMedicalAssistant;

@@ -14,7 +14,7 @@ import { HospitalService } from './hospital.service';
 import { Hospital, Prisma } from '@prisma/client';
 import { Response } from 'express';
 
-@Controller('hospital')
+@Controller('Hospital')
 export class HospitalController {
   constructor(private readonly HospitalService: HospitalService) { }
 

@@ -18,7 +18,7 @@ import { MedicalAssistant, Prisma } from '@prisma/client';
 export class MedicalAssistantController {
   constructor(
     private readonly medicalAssistantService: MedicalAssistantService,
-  ) {}
+  ) { }
 
   @Post()
   addMedicalAssistant(

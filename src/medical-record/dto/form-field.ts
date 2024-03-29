@@ -1,10 +1,21 @@
-import { FormFieldValueType } from "@prisma/client";
+
+
+export enum FormFieldValueType {
+    TEXT = 'TEXT',
+    NUMBER = "NUMBER",
+    DATE = "DATE",
+    BOOLEAN = "BOOLEAN",
+    SINGLE_CHOICE = "SINGLE_CHOICE",
+    MULTIPLE_CHOICE = "MULTI_CHOICE"
+}
 
 export type FormField = {
     key: string,
     name: string,
-    category: string,
-    valueType: FormFieldValueType
-    isCalculated?: boolean
+    generalCategory: string,
+    specificCategory?: string,
+    valueType: FormFieldValueType,
+    isCalculated?: boolean,
+    description?: String
 
 }

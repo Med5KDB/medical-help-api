@@ -16,7 +16,7 @@ import { Response } from 'express';
 
 @Controller('doctor')
 export class DoctorController {
-  constructor(private readonly doctorService: DoctorService) {}
+  constructor(private readonly doctorService: DoctorService) { }
 
   @Post()
   async addDoctor(@Body() data: Prisma.DoctorCreateInput): Promise<Doctor> {

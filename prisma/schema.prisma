@@ -28,30 +28,19 @@ enum FormFieldValueType {
   MULTIPLE_CHOICE
 }
 
-// type FormField {
-//   id           String
-//   key          String
-//   name         String
-//   category     String
-//   FormFieldValueType    FormFieldValueType
-//   isCalculated Boolean   @default(false)
-// }
-
-model FormFieldValue {
-  id              String             @id @default(auto()) @map("_id") @db.ObjectId
-  FormFieldkey    String
-  value           FormFieldValueType
-  MedicalRecord   MedicalRecord?     @relation(fields: [medicalRecordId], references: [id])
-  medicalRecordId String?            @db.ObjectId
+type FormFieldValue {
+  id           String
+  FormFieldkey String
+  value        String
 }
 
 model MedicalRecord {
-  id             String           @id @default(auto()) @map("_id") @db.ObjectId
-  formFieldValue FormFieldValue[]
-  patient        Patient          @relation(fields: [patientId], references: [id])
-  patientId      String           @db.ObjectId
-  createdAt      DateTime         @default(now())
-  // updatedAt  DateTime         @updatedAt
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  patient         Patient          @relation(fields: [patientId], references: [id])
+  patientId       String           @db.ObjectId
+  formFieldValues FormFieldValue[]
 }
 
 type Time {
