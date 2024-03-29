@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Medicine, Prisma } from '@prisma/client';
-import { PrismaService } from 'src/lib/prisma.service';
+import { PrismaService } from '../lib/prisma.service';
 
 @Injectable()
 export class MedicineService {
