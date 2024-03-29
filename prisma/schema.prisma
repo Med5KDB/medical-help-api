@@ -80,8 +80,8 @@ model Doctor {
   // sex                Sex
   speciality       String
   medicalAssistant MedicalAssistant[]
-  // hospital           Hospital        @relation(fields: [hospitalId], references: [id])
-  // hospitalId         String            @db.ObjectId
+  Hospital         Hospital?          @relation(fields: [hospitalId], references: [id])
+  hospitalId       String?            @db.ObjectId
 }
 
 model Patient {
@@ -111,11 +111,11 @@ model MedicalAssistant {
 }
 
 model Hospital {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   address     String
   phoneNumber String
-  // Doctor      Doctor[]
+  Doctor      Doctor[]
 }
 
 model Medicine {

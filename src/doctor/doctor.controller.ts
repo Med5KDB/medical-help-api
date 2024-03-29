@@ -13,6 +13,7 @@ import {
 import { DoctorService } from './doctor.service';
 import { Doctor, Prisma } from '@prisma/client';
 import { Response } from 'express';
+import { ListArgs } from 'src/lib/listArg';
 
 @Controller('doctor')
 export class DoctorController {
@@ -31,35 +32,34 @@ export class DoctorController {
 
   @Get()
   async doctors(
-    @Query('sort') sort: string,
-    @Query('range') range: string,
-    @Query('filter') filter: string,
     @Res() response: Response,
+    @Query('sort') sort?: string,
+    @Query('range') range?: string,
+    @Query('filter') filter?: string,
   ) {
     try {
-      const parsedSort = JSON.parse(sort);
-      const parsedRange = JSON.parse(range);
-      const parsedFilter = JSON.parse(filter);
 
-      // Ensure that sort is an array
-      const sortArray = Array.isArray(parsedSort) ? parsedSort : [parsedSort];
+      const args: ListArgs = {
+        field: sort ? JSON.parse(sort)[0] : undefined,
+        order: sort ? JSON.parse(sort)[1] : undefined,
+        skip: range ? JSON.parse(range)[0] : undefined,
+        take: range ? JSON.parse(range)[1] : undefined,
+      };
+      const parsedFilter = filter ? JSON.parse(filter) : undefined;
 
-      const field = sortArray[0];
-      const order = sortArray[1];
-
-      const skip = parsedRange[0];
-      const take = parsedRange[1];
 
       const { doctors, count } = await this.doctorService.findMany(
-        { field, order },
-        { skip, take },
-        parsedFilter,
+        parsedFilter, args
       );
-      const length = doctors.length;
-      response.set(
-        'Content-Range',
-        `doctors ${skip}-${skip + length}/${count}`,
-      );
+
+      if (args.order) {
+        const length = doctors.length;
+        response.set(
+          'Content-Range',
+          `doctors ${args.skip}-${args.skip + length}/${count}`,
+        );
+      }
+
 
       response.json(doctors);
     } catch (error) {

@@ -13,6 +13,7 @@ import {
 import { MedicalAssistantService } from './medical-assistant.service';
 import { Response } from 'express';
 import { MedicalAssistant, Prisma } from '@prisma/client';
+import { ListArgs } from 'src/lib/listArg';
 
 @Controller('medical-assistant')
 export class MedicalAssistantController {
@@ -29,35 +30,31 @@ export class MedicalAssistantController {
 
   @Get()
   async medicalAssistants(
-    @Query('sort') sort: string,
-    @Query('range') range: string,
-    @Query('filter') filter: string,
     @Res() response: Response,
+    @Query('sort') sort?: string,
+    @Query('range') range?: string,
+    @Query('filter') filter?: string,
   ) {
     try {
-      const parsedSort = JSON.parse(sort);
-      const parsedRange = JSON.parse(range);
-      const parsedFilter = JSON.parse(filter);
-
-      const sortArray = Array.isArray(parsedSort) ? parsedSort : [parsedSort];
-
-      const field = sortArray[0];
-      const order = sortArray[1];
-
-      const skip = parsedRange[0];
-      const take = parsedRange[1];
+      const args: ListArgs = {
+        field: sort ? JSON.parse(sort)[0] : undefined,
+        order: sort ? JSON.parse(sort)[1] : undefined,
+        skip: range ? JSON.parse(range)[0] : undefined,
+        take: range ? JSON.parse(range)[1] : undefined,
+      };
+      const parsedFilter = filter ? JSON.parse(filter) : undefined;
 
       const { medicalAssistants, count } =
         await this.medicalAssistantService.findMany(
-          { field, order },
-          { skip, take },
-          parsedFilter,
+          parsedFilter, args
         );
-      const length = medicalAssistants.length;
-      response.set(
-        'Content-Range',
-        `doctors ${skip}-${skip + length}/${count}`,
-      );
+      if (args.order) {
+        const length = medicalAssistants.length;
+        response.set(
+          'Content-Range',
+          `medicalAssistants ${args.skip}-${args.skip + length}/${count}`,
+        );
+      }
       response.json(medicalAssistants);
     } catch (err) {
       throw new InternalServerErrorException(
@@ -70,7 +67,7 @@ export class MedicalAssistantController {
   async medicalAssistant(
     @Param('id') id: string,
   ): Promise<MedicalAssistant | null> {
-    const args: Prisma.DoctorFindUniqueArgs = { where: { id } };
+    const args: Prisma.MedicalAssistantFindUniqueArgs = { where: { id } };
     return await this.medicalAssistantService.findOne(args);
   }
 

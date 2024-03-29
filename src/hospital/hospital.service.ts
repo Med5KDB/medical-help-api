@@ -7,6 +7,7 @@ import {
 import { Hospital, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
 import { omit } from 'lodash';
+import { ListArgs } from 'src/lib/listArg';
 
 
 
@@ -61,23 +62,40 @@ export class HospitalService {
   }
 
   async findMany(
-    sort: { field: string; order: 'asc' | 'desc' },
-    range: { skip: number; take: number },
     filter: Prisma.HospitalWhereInput,
+    listArg?: ListArgs,
   ): Promise<{ hospitals: Hospital[]; count: number }> {
     try {
-      // const { field, order } = sort;
-      const field = sort.field;
-      const value = sort.order.toLowerCase() as 'asc' | 'desc';
-      const [hospitals, count] = await Promise.all([
-        this.prisma.hospital.findMany({
-          orderBy: { [field]: value },
-          skip: range.skip,
-          take: range.take - range.skip + 1,
+      let allArgs: Prisma.HospitalFindManyArgs = {};
+
+      if (listArg.order) {
+        const { field, order, skip, take } = listArg;
+        const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+        allArgs = {
+          ...allArgs,
+          orderBy,
+          skip,
+          take: take - skip + 1,
           where: filter,
-        }),
+        };
+      } else {
+
+        const filterName = Object.keys(filter)[0];
+        const filterContent = filter[filterName];
+        const filterArray = Array.isArray(filterContent)
+          ? { [filterName]: { in: filterContent } }
+          : { [filterName]: filterContent };
+
+        allArgs = {
+          ...allArgs,
+          where: filterArray,
+        };
+      }
+      const [hospitals, count] = await Promise.all([
+        this.prisma.hospital.findMany(allArgs),
         this.prisma.hospital.count(),
       ]);
+
 
       return { hospitals, count };
     } catch (error) {

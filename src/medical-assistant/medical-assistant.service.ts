@@ -7,38 +7,55 @@ import {
 import { PrismaService } from 'src/lib/prisma.service';
 import { MedicalAssistant, Prisma } from '@prisma/client';
 import { omit } from 'lodash';
+import { ListArgs } from 'src/lib/listArg';
 
 @Injectable()
 export class MedicalAssistantService {
   private readonly logger = new Logger(MedicalAssistantService.name);
   constructor(private prisma: PrismaService) { }
   async findMany(
-    sort: { field: string; order: 'asc' | 'desc' },
-    range: { skip: number; take: number },
     filter: Prisma.MedicalAssistantWhereInput,
+    listArg?: ListArgs
   ): Promise<{ medicalAssistants: MedicalAssistant[]; count: number }> {
     try {
-      const field = sort.field;
-      const value = sort.order.toLowerCase() as 'asc' | 'desc';
-      const [medicalAssistants, count] = await Promise.all([
-        this.prisma.medicalAssistant.findMany({
-          orderBy: { [field]: value },
-          skip: range.skip,
-          take: range.take - range.skip + 1,
+      let allArgs: Prisma.MedicalAssistantFindManyArgs = {};
+
+      if (listArg.order) {
+        const { field, order, skip, take } = listArg;
+        const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+        allArgs = {
+          ...allArgs,
+          orderBy,
+          skip,
+          take: take - skip + 1,
           where: filter,
-        }),
+        };
+      } else {
+        const filterName = Object.keys(filter)[0];
+        const filterContent = filter[filterName];
+        const filterArray = Array.isArray(filterContent)
+          ? { [filterName]: { in: filterContent } }
+          : { [filterName]: filterContent };
+
+        allArgs = {
+          ...allArgs,
+          where: filterArray,
+        };
+      }
+      const [medicalAssistants, count] = await Promise.all([
+        this.prisma.medicalAssistant.findMany(allArgs),
         this.prisma.medicalAssistant.count(),
       ]);
       return { medicalAssistants, count };
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        `List doctors failed due to ${error}`,
+        `List MedicalAssistants failed due to ${error}`,
       );
     }
   }
   async findOne(
-    args: Prisma.DoctorFindUniqueArgs,
+    args: Prisma.MedicalAssistantFindUniqueArgs,
   ): Promise<MedicalAssistant | null> {
     try {
       const { id } = args.where;
