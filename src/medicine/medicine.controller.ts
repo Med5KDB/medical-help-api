@@ -11,22 +11,25 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { MedicineService } from './medicine.service';
+
 import { Medicine, Prisma } from '@prisma/client';
 import { Response } from 'express';
 
 @Controller('medicine')
 export class MedicineController {
-  constructor(private readonly MedicineService: MedicineService) { }
+  constructor(private readonly medicineService: MedicineService) {}
 
   @Post()
-  async addMedicine(@Body() data: Prisma.MedicineCreateInput): Promise<Medicine> {
-    return await this.MedicineService.createMedicine(data);
+  async addMedicine(
+    @Body() data: Prisma.MedicineCreateInput,
+  ): Promise<Medicine> {
+    return await this.medicineService.createMedicine(data);
   }
 
   @Get(':id')
   async Medicine(@Param('id') id: string): Promise<Medicine | null> {
     const args: Prisma.MedicineFindUniqueArgs = { where: { id } };
-    return await this.MedicineService.findOne(args);
+    return await this.medicineService.findOne(args);
   }
 
   @Get()
@@ -50,7 +53,7 @@ export class MedicineController {
       const skip = parsedRange[0];
       const take = parsedRange[1];
 
-      const { medicines, count } = await this.MedicineService.findMany(
+      const { medicines, count } = await this.medicineService.findMany(
         { field, order },
         { skip, take },
         parsedFilter,
@@ -75,12 +78,12 @@ export class MedicineController {
     @Body() data: Prisma.MedicineUpdateArgs['data'],
   ): Promise<Medicine> {
     const args: Prisma.MedicineUpdateArgs = { where: { id }, data };
-    return await this.MedicineService.updateOne(args);
+    return await this.medicineService.updateOne(args);
   }
   @Delete(':id')
   async deleteMedicine(@Param('id') id: string): Promise<{ id: string }> {
     const args: Prisma.MedicineDeleteArgs = { where: { id } };
-    const deletedMedicine = await this.MedicineService.deleteOne(args);
+    const deletedMedicine = await this.medicineService.deleteOne(args);
     return deletedMedicine;
   }
 }

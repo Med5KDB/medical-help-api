@@ -10,7 +10,7 @@ import { PrismaService } from 'src/lib/prisma.service';
 @Injectable()
 export class MedicineService {
   private readonly logger = new Logger(MedicineService.name);
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async createMedicine(data: Prisma.MedicineCreateInput): Promise<Medicine> {
     try {
       const Medicine = await this.prisma.medicine.create({ data });
