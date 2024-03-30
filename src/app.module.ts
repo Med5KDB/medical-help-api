@@ -7,9 +7,10 @@ import { MedicalAssistantModule } from './medical-assistant/medical-assistant.mo
 import { HospitalModule } from './hospital/hospital.module';
 import { MedicineModule } from './medicine/medicine.module';
 import { MedicalRecordModule } from './medical-record/medical-record.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule, HospitalModule, MedicalRecordModule],
+  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule, HospitalModule, MedicalRecordModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
