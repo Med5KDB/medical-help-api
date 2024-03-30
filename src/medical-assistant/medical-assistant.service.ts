@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/lib/prisma.service';
+import { PrismaService } from '../lib/prisma.service';
 import { MedicalAssistant, Prisma } from '@prisma/client';
 import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';

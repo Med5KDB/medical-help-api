@@ -17,17 +17,19 @@ import { ListArgs } from 'src/lib/listArg';
 
 @Controller('Hospital')
 export class HospitalController {
-  constructor(private readonly HospitalService: HospitalService) { }
+  constructor(private readonly hospitalService: HospitalService) {}
 
   @Post()
-  async addHospital(@Body() data: Prisma.HospitalCreateInput): Promise<Hospital> {
-    return await this.HospitalService.createHospital(data);
+  async addHospital(
+    @Body() data: Prisma.HospitalCreateInput,
+  ): Promise<Hospital> {
+    return await this.hospitalService.createHospital(data);
   }
 
   @Get(':id')
   async Hospital(@Param('id') id: string): Promise<Hospital | null> {
     const args: Prisma.HospitalFindUniqueArgs = { where: { id } };
-    return await this.HospitalService.findOne(args);
+    return await this.hospitalService.findOne(args);
   }
 
   @Get()
@@ -48,6 +50,8 @@ export class HospitalController {
 
       const { hospitals, count } = await this.HospitalService.findMany(
         parsedFilter, args
+
+
       );
       if (args.order) {
         const length = hospitals.length;
@@ -71,12 +75,12 @@ export class HospitalController {
     @Body() data: Prisma.HospitalUpdateArgs['data'],
   ): Promise<Hospital> {
     const args: Prisma.HospitalUpdateArgs = { where: { id }, data };
-    return await this.HospitalService.updateOne(args);
+    return await this.hospitalService.updateOne(args);
   }
   @Delete(':id')
   async deleteHospital(@Param('id') id: string): Promise<{ id: string }> {
     const args: Prisma.HospitalDeleteArgs = { where: { id } };
-    const deletedHospital = await this.HospitalService.deleteOne(args);
+    const deletedHospital = await this.hospitalService.deleteOne(args);
     return deletedHospital;
   }
 }

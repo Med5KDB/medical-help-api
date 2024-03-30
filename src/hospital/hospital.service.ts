@@ -9,13 +9,10 @@ import { PrismaService } from 'src/lib/prisma.service';
 import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';
 
-
-
-
 @Injectable()
 export class HospitalService {
   private readonly logger = new Logger(HospitalService.name);
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async createHospital(data: Prisma.HospitalCreateInput): Promise<Hospital> {
     try {
       const hospital = await this.prisma.hospital.create({ data });

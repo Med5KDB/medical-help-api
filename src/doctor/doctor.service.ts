@@ -9,6 +9,7 @@ import { PrismaService } from 'src/lib/prisma.service';
 import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';
 
+
 @Injectable()
 export class DoctorService {
   private readonly logger = new Logger(DoctorService.name);
