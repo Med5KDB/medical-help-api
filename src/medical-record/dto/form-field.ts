@@ -17,5 +17,6 @@ export type FormField = {
     valueType: FormFieldValueType,
     isCalculated?: boolean,
     description?: String
+    choice?: string[]
 
 }
