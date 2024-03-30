@@ -23,12 +23,24 @@ export class MedicalAssistantService {
       if (listArg.order) {
         const { field, order, skip, take } = listArg;
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+
+        let where: Prisma.MedicalAssistantWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { username: { contains: filterContent } },
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+            { email: { contains: filterContent } }
+          ]
+        } : {};
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where: filter,
+          where
         };
       } else {
         const filterName = Object.keys(filter)[0];

@@ -78,12 +78,22 @@ export class PatientService {
       if (listArg.order) {
         const { field, order, skip, take } = listArg;
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+
+        let where: Prisma.PatientWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+          ]
+        } : {};
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where: filter,
+          where
         };
       } else {
         const filterName = Object.keys(filter)[0];

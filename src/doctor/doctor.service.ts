@@ -63,16 +63,31 @@ export class DoctorService {
     try {
       let allArgs: Prisma.DoctorFindManyArgs = {};
 
+
       if (listArg.order) {
         const { field, order, skip, take } = listArg;
+        let where: Prisma.DoctorWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { username: { contains: filterContent } },
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+            { email: { contains: filterContent } }
+          ]
+        } : {};
+
+
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where: filter,
+          where
         };
+
       } else {
         const filterName = Object.keys(filter)[0];
         const filterContent = filter[filterName];
