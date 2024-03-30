@@ -13,7 +13,9 @@ export class AppointmentService {
   constructor(private prisma: PrismaService) {}
   async create(data: Prisma.AppointmentCreateInput): Promise<Appointment> {
     try {
-      const appointment = await this.prisma.appointment.create({ data });
+      const appointment = await this.prisma.appointment.create({
+        data: { ...data, date: new Date(data.date).toISOString() },
+      });
       return appointment;
     } catch (err) {
       this.logger.error(err);
