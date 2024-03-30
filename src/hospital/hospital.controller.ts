@@ -17,7 +17,7 @@ import { ListArgs } from 'src/lib/listArg';
 
 @Controller('Hospital')
 export class HospitalController {
-  constructor(private readonly hospitalService: HospitalService) {}
+  constructor(private readonly hospitalService: HospitalService) { }
 
   @Post()
   async addHospital(
@@ -48,7 +48,7 @@ export class HospitalController {
       };
       const parsedFilter = filter ? JSON.parse(filter) : undefined;
 
-      const { hospitals, count } = await this.HospitalService.findMany(
+      const { hospitals, count } = await this.hospitalService.findMany(
         parsedFilter, args
 
 
