@@ -5,12 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Patient, Prisma } from '@prisma/client';
-import { PrismaService } from '../lib/prisma.service';
+import { PrismaService } from 'src/lib/prisma.service';
+import { omit } from "lodash";
+import { ListArgs } from 'src/lib/listArg';
 
 @Injectable()
 export class PatientService {
   private readonly logger = new Logger(PatientService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async createPatient(data: Prisma.PatientCreateInput): Promise<Patient> {
     try {
       const patient = await this.prisma.patient.create({
@@ -28,7 +30,7 @@ export class PatientService {
     try {
       const updatedPatient = await this.prisma.patient.update({
         where: args.where,
-        data: args.data,
+        data: omit(args.data, 'id', 'patientId'),
       });
       return updatedPatient;
     } catch (error) {
@@ -69,22 +71,49 @@ export class PatientService {
   }
 
   async findMany(
-    sort: { field: string; order: 'asc' | 'desc' },
-    range: { skip: number; take: number },
-    filter: any,
+    filter: Prisma.PatientWhereInput,
+    listArg?: ListArgs,
   ): Promise<{ patients: Patient[]; count: number }> {
     try {
-      const field = sort.field;
-      const value = sort.order.toLowerCase() as 'asc' | 'desc';
+      let allArgs: Prisma.PatientFindManyArgs = {};
+
+      if (listArg.order) {
+        const { field, order, skip, take } = listArg;
+        const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+
+        let where: Prisma.PatientWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+          ]
+        } : {};
+        allArgs = {
+          ...allArgs,
+          orderBy,
+          skip,
+          take: take - skip + 1,
+          where
+        };
+      } else {
+        const filterName = Object.keys(filter)[0];
+        const filterContent = filter[filterName];
+        const filterArray = Array.isArray(filterContent)
+          ? { [filterName]: { in: filterContent } }
+          : { [filterName]: filterContent };
+
+        allArgs = {
+          ...allArgs,
+          where: filterArray,
+        };
+      }
       const [patients, count] = await Promise.all([
-        this.prisma.patient.findMany({
-          orderBy: { [field]: value },
-          skip: range.skip,
-          take: range.take,
-          where: filter,
-        }),
+        this.prisma.patient.findMany(allArgs),
         this.prisma.patient.count(),
       ]);
+
       return { patients, count };
     } catch (error) {
       this.logger.error(error);

@@ -20,24 +20,28 @@ enum MaritalStatus {
   WIDOWED
 }
 
-enum ValueType {
+enum FormFieldValueType {
+  TEXT
   NUMBER
   BOOLEAN
+  DATE
   SINGLE_CHOICE
   MULTIPLE_CHOICE
 }
 
-type FormField {
-  id        String
-  name      String
-  value     String
-  category  String
-  valueType ValueType
+type FormFieldValue {
+  id           String
+  formFieldkey String
+  value        String
 }
 
-type MedicalRecord {
-  id        String
-  formField FormField
+model MedicalRecord {
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  patient        Patient          @relation(fields: [patientId], references: [id])
+  patientId      String           @db.ObjectId
+  formFieldValue FormFieldValue[]
 }
 
 type Time {
@@ -86,7 +90,7 @@ model Doctor {
 }
 
 model Patient {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   firstname     String
   lastname      String
   birthDate     DateTime
@@ -95,7 +99,7 @@ model Patient {
   // sex           Sex
   address       String
   phoneNumber   String
-  medicalRecord MedicalRecord?
+  medicalRecord MedicalRecord[]
   Appointment   Appointment[]
 }
 
@@ -107,8 +111,8 @@ model MedicalAssistant {
   password    String
   phoneNumber String?
   email       String?
-  Doctor      Doctor  @relation(fields: [doctorId], references: [id])
-  doctorId    String  @db.ObjectId
+  doctor      Doctor? @relation(fields: [doctorId], references: [id])
+  doctorId    String? @db.ObjectId
 }
 
 model Hospital {
@@ -116,16 +120,13 @@ model Hospital {
   name        String
   address     String
   phoneNumber String
-  Doctor      Doctor[]
+  doctor      Doctor[]
 }
 
 model Medicine {
   id          String  @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String?
-  // price       Float
-  // quantity    Int
-  // category    String
 }
 
 enum AppointmentType {

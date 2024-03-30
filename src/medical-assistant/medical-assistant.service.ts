@@ -6,38 +6,68 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../lib/prisma.service';
 import { MedicalAssistant, Prisma } from '@prisma/client';
+import { omit } from 'lodash';
+import { ListArgs } from 'src/lib/listArg';
 
 @Injectable()
 export class MedicalAssistantService {
   private readonly logger = new Logger(MedicalAssistantService.name);
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async findMany(
-    sort: { field: string; order: 'asc' | 'desc' },
-    range: { skip: number; take: number },
     filter: Prisma.MedicalAssistantWhereInput,
+    listArg?: ListArgs
   ): Promise<{ medicalAssistants: MedicalAssistant[]; count: number }> {
     try {
-      const field = sort.field;
-      const value = sort.order.toLowerCase() as 'asc' | 'desc';
+      let allArgs: Prisma.MedicalAssistantFindManyArgs = {};
+
+      if (listArg.order) {
+        const { field, order, skip, take } = listArg;
+        const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+
+        let where: Prisma.MedicalAssistantWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { username: { contains: filterContent } },
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+            { email: { contains: filterContent } }
+          ]
+        } : {};
+        allArgs = {
+          ...allArgs,
+          orderBy,
+          skip,
+          take: take - skip + 1,
+          where
+        };
+      } else {
+        const filterName = Object.keys(filter)[0];
+        const filterContent = filter[filterName];
+        const filterArray = Array.isArray(filterContent)
+          ? { [filterName]: { in: filterContent } }
+          : { [filterName]: filterContent };
+
+        allArgs = {
+          ...allArgs,
+          where: filterArray,
+        };
+      }
       const [medicalAssistants, count] = await Promise.all([
-        this.prisma.medicalAssistant.findMany({
-          orderBy: { [field]: value },
-          skip: range.skip,
-          take: range.take - range.skip + 1,
-          where: filter,
-        }),
+        this.prisma.medicalAssistant.findMany(allArgs),
         this.prisma.medicalAssistant.count(),
       ]);
       return { medicalAssistants, count };
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(
-        `List doctors failed due to ${error}`,
+        `List MedicalAssistants failed due to ${error}`,
       );
     }
   }
   async findOne(
-    args: Prisma.DoctorFindUniqueArgs,
+    args: Prisma.MedicalAssistantFindUniqueArgs,
   ): Promise<MedicalAssistant | null> {
     try {
       const { id } = args.where;
@@ -80,7 +110,7 @@ export class MedicalAssistantService {
       const updatedMedicalAssistant = await this.prisma.medicalAssistant.update(
         {
           where: args.where,
-          data: args.data,
+          data: omit(args.data, 'id'),
         },
       );
       return updatedMedicalAssistant;
