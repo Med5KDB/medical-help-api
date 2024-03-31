@@ -9,11 +9,10 @@ import { PrismaService } from 'src/lib/prisma.service';
 import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';
 
-
 @Injectable()
 export class DoctorService {
   private readonly logger = new Logger(DoctorService.name);
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async createDoctor(data: Prisma.DoctorCreateInput): Promise<Doctor> {
     try {
       const doctor = await this.prisma.doctor.create({ data });
@@ -64,21 +63,23 @@ export class DoctorService {
     try {
       let allArgs: Prisma.DoctorFindManyArgs = {};
 
-
       if (listArg.order) {
         const { field, order, skip, take } = listArg;
         let where: Prisma.DoctorWhereInput = {};
-        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
-        where = filterContent ? {
-          OR: [
-            { username: { contains: filterContent } },
-            { lastname: { contains: filterContent } },
-            { firstname: { contains: filterContent } },
-            { phoneNumber: { contains: filterContent } },
-            { email: { contains: filterContent } }
-          ]
-        } : {};
-
+        const filterContent = filter
+          ? filter[Object.keys(filter)[0]]
+          : undefined;
+        where = filterContent
+          ? {
+              OR: [
+                { username: { contains: filterContent } },
+                { lastname: { contains: filterContent } },
+                { firstname: { contains: filterContent } },
+                { phoneNumber: { contains: filterContent } },
+                { email: { contains: filterContent } },
+              ],
+            }
+          : {};
 
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
         allArgs = {
@@ -86,9 +87,8 @@ export class DoctorService {
           orderBy,
           skip,
           take: take - skip + 1,
-          where
+          where,
         };
-
       } else {
         const filterName = Object.keys(filter)[0];
         const filterContent = filter[filterName];

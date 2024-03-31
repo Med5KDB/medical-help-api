@@ -19,7 +19,7 @@ import { ListArgs } from 'src/lib/listArg';
 export class MedicalAssistantController {
   constructor(
     private readonly medicalAssistantService: MedicalAssistantService,
-  ) { }
+  ) {}
 
   @Post()
   addMedicalAssistant(
@@ -45,9 +45,7 @@ export class MedicalAssistantController {
       const parsedFilter = filter ? JSON.parse(filter) : undefined;
 
       const { medicalAssistants, count } =
-        await this.medicalAssistantService.findMany(
-          parsedFilter, args
-        );
+        await this.medicalAssistantService.findMany(parsedFilter, args);
       if (args.order) {
         const length = medicalAssistants.length;
         response.set(

@@ -7,6 +7,6 @@ import { PrismaService } from 'src/lib/prisma.service';
 
 @Module({
   controllers: [FormFieldController, MedicalRecordController],
-  providers: [FormFieldService, MedicalRecordService, PrismaService]
+  providers: [FormFieldService, MedicalRecordService, PrismaService],
 })
-export class MedicalRecordModule { }
+export class MedicalRecordModule {}

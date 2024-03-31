@@ -27,7 +27,6 @@ export class HospitalService {
 
   async updateOne(args: Prisma.HospitalUpdateArgs): Promise<Hospital> {
     try {
-
       const updatedHospital = await this.prisma.hospital.update({
         where: args.where,
         data: omit(args.data, 'id'),
@@ -76,7 +75,6 @@ export class HospitalService {
           where: filter,
         };
       } else {
-
         const filterName = Object.keys(filter)[0];
         const filterContent = filter[filterName];
         const filterArray = Array.isArray(filterContent)
@@ -92,7 +90,6 @@ export class HospitalService {
         this.prisma.hospital.findMany(allArgs),
         this.prisma.hospital.count(),
       ]);
-
 
       return { hospitals, count };
     } catch (error) {

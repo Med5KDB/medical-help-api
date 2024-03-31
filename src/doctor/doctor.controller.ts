@@ -17,7 +17,7 @@ import { ListArgs } from 'src/lib/listArg';
 
 @Controller('doctor')
 export class DoctorController {
-  constructor(private readonly doctorService: DoctorService) { }
+  constructor(private readonly doctorService: DoctorService) {}
 
   @Post()
   async addDoctor(@Body() data: Prisma.DoctorCreateInput): Promise<Doctor> {
@@ -38,7 +38,6 @@ export class DoctorController {
     @Query('filter') filter?: string,
   ) {
     try {
-
       const args: ListArgs = {
         field: sort ? JSON.parse(sort)[0] : undefined,
         order: sort ? JSON.parse(sort)[1] : undefined,
@@ -47,9 +46,9 @@ export class DoctorController {
       };
       const parsedFilter = filter ? JSON.parse(filter) : undefined;
 
-
       const { doctors, count } = await this.doctorService.findMany(
-        parsedFilter, args
+        parsedFilter,
+        args,
       );
 
       if (args.order) {
@@ -59,7 +58,6 @@ export class DoctorController {
           `doctors ${args.skip}-${args.skip + length}/${count}`,
         );
       }
-
 
       response.json(doctors);
     } catch (error) {

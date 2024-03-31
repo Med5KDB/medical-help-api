@@ -12,10 +12,10 @@ import { ListArgs } from 'src/lib/listArg';
 @Injectable()
 export class MedicalAssistantService {
   private readonly logger = new Logger(MedicalAssistantService.name);
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async findMany(
     filter: Prisma.MedicalAssistantWhereInput,
-    listArg?: ListArgs
+    listArg?: ListArgs,
   ): Promise<{ medicalAssistants: MedicalAssistant[]; count: number }> {
     try {
       let allArgs: Prisma.MedicalAssistantFindManyArgs = {};
@@ -25,22 +25,26 @@ export class MedicalAssistantService {
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
 
         let where: Prisma.MedicalAssistantWhereInput = {};
-        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
-        where = filterContent ? {
-          OR: [
-            { username: { contains: filterContent } },
-            { lastname: { contains: filterContent } },
-            { firstname: { contains: filterContent } },
-            { phoneNumber: { contains: filterContent } },
-            { email: { contains: filterContent } }
-          ]
-        } : {};
+        const filterContent = filter
+          ? filter[Object.keys(filter)[0]]
+          : undefined;
+        where = filterContent
+          ? {
+              OR: [
+                { username: { contains: filterContent } },
+                { lastname: { contains: filterContent } },
+                { firstname: { contains: filterContent } },
+                { phoneNumber: { contains: filterContent } },
+                { email: { contains: filterContent } },
+              ],
+            }
+          : {};
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where
+          where,
         };
       } else {
         const filterName = Object.keys(filter)[0];

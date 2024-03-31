@@ -4,14 +4,11 @@ import { FormFieldService } from 'src/medical-record/services/form-field.service
 
 @Controller('formField')
 export class FormFieldController {
+  constructor(private readonly formFieldService: FormFieldService) {}
 
-    constructor(private readonly FormFieldService: FormFieldService) { }
-
-    @Get()
-    async allFormFields(): Promise<FormField[]> {
-        const result = await this.FormFieldService.find();
-        return result.data;
-    }
+  @Get()
+  async allFormFields(): Promise<FormField[]> {
+    const result = await this.formFieldService.find();
+    return result.data;
+  }
 }
-
-

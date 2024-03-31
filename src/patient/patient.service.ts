@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { Patient, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
-import { omit } from "lodash";
+import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';
 
 @Injectable()
 export class PatientService {
   private readonly logger = new Logger(PatientService.name);
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
   async createPatient(data: Prisma.PatientCreateInput): Promise<Patient> {
     try {
       const patient = await this.prisma.patient.create({
@@ -82,20 +82,24 @@ export class PatientService {
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
 
         let where: Prisma.PatientWhereInput = {};
-        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
-        where = filterContent ? {
-          OR: [
-            { lastname: { contains: filterContent } },
-            { firstname: { contains: filterContent } },
-            { phoneNumber: { contains: filterContent } },
-          ]
-        } : {};
+        const filterContent = filter
+          ? filter[Object.keys(filter)[0]]
+          : undefined;
+        where = filterContent
+          ? {
+              OR: [
+                { lastname: { contains: filterContent } },
+                { firstname: { contains: filterContent } },
+                { phoneNumber: { contains: filterContent } },
+              ],
+            }
+          : {};
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where
+          where,
         };
       } else {
         const filterName = Object.keys(filter)[0];
