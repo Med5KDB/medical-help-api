@@ -32,15 +32,22 @@ export class AuthGuard implements CanActivate {
                 secret: jwtConstants.secret,
             });
 
+            if (!payload) {
+                throw new UnauthorizedException('Invalid token payload');
+            }
+
             request['user'] = payload;
-        } catch {
-            throw new UnauthorizedException();
+        } catch (error) {
+            console.error('Error during JWT verification:', error);
+            throw new UnauthorizedException('Authentication failed');
         }
         return true;
     }
 
     private extractTokenFromHeader(request: Request): string | undefined {
         const [type, token] = request.headers.authorization?.split(' ') ?? [];
+
         return type === 'Bearer' ? token : undefined;
+
     }
 }

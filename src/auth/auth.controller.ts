@@ -7,9 +7,8 @@ import {
     Post,
     Request,
     Res,
-    UseGuards
+
 } from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { Public } from './constants';
@@ -23,16 +22,14 @@ export class AuthController {
     @Post('login')
     async signIn(@Body() signInDto: Record<string, any>, @Res() res: Response) {
         const token = await this.authService.signIn(signInDto.username, signInDto.password);
-        // console.log(token)
         if (token) {
-            return res.status(HttpStatus.CREATED).json({ token });
+            return res.status(HttpStatus.CREATED).json(token.access_token);
         } else {
             return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Username or password is incorrect' })
         }
 
     }
 
-    @UseGuards(AuthGuard)
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;

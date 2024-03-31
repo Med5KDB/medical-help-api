@@ -1,22 +1,20 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Admin, Doctor, MedicalAssistant } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma.service';
 import { JwtService } from '@nestjs/jwt';
+import { Admin, Doctor, MedicalAssistant } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService) { }
 
-
     async signIn(username: string, password: string): Promise<{ access_token: string }> {
-        const doctor = await this.prisma.doctor.findUnique({ where: { username } });
+        const doctor = await this.prisma.doctor.findUnique({ where: { username: username } });
 
         if (doctor) {
             if (doctor.password !== password) {
                 throw new UnauthorizedException();
-
             }
-            const payload = { sub: doctor.id, username: doctor.username };
+            const payload = { id: doctor.id, role: doctor.role, fullName: `${doctor.firstname} ${doctor.lastname}` };
             return {
                 access_token: await this.jwtService.signAsync(payload),
             };
@@ -27,9 +25,8 @@ export class AuthService {
         if (medicalAssistant) {
             if (medicalAssistant.password !== password) {
                 throw new UnauthorizedException();
-
             }
-            const payload = { sub: medicalAssistant.id, username: medicalAssistant.username };
+            const payload = { id: medicalAssistant.id, role: medicalAssistant.role, fullName: `${medicalAssistant.firstname} ${medicalAssistant.lastname}` };
             return {
                 access_token: await this.jwtService.signAsync(payload),
             };
@@ -40,15 +37,13 @@ export class AuthService {
         if (admin) {
             if (admin.password !== password) {
                 throw new UnauthorizedException();
-
             }
-            const payload = { sub: admin.id, username: admin.username };
+            const payload = { id: admin.id, role: admin.role, fullName: `${admin.firstname} ${admin.lastname}` };
             return {
                 access_token: await this.jwtService.signAsync(payload),
             };
         }
 
         return null;
-
     }
 }
