@@ -23,7 +23,7 @@ enum MaritalStatus {
 enum Role {
   ADMIN
   DOCTOR
-  MEDICALASSISTANT
+  MEDICAL_ASSISTANT
 }
 
 enum FormFieldValueType {
@@ -120,7 +120,7 @@ model MedicalAssistant {
   email       String?
   doctor      Doctor? @relation(fields: [doctorId], references: [id])
   doctorId    String? @db.ObjectId
-  role        Role    @default(MEDICALASSISTANT)
+  role        Role    @default(MEDICAL_ASSISTANT)
 }
 
 model Hospital {
@@ -227,5 +227,4 @@ model Admin {
   username  String @unique
   password  String
   role      Role   @default(ADMIN)
-
 }
