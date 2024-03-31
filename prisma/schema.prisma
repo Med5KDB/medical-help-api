@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  // output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -7,10 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// enum Sex {
-//   MALE
-//   FEMALE
-// }
+enum Sex {
+  MALE
+  FEMALE
+}
 
 enum MaritalStatus {
   SINGLE
@@ -36,17 +37,17 @@ enum FormFieldValueType {
 
 type FormFieldValue {
   id           String
-  FormFieldkey String
+  formFieldkey String
   value        String
 }
 
 model MedicalRecord {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  patient         Patient          @relation(fields: [patientId], references: [id])
-  patientId       String           @db.ObjectId
-  formFieldValues FormFieldValue[]
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  patient        Patient          @relation(fields: [patientId], references: [id])
+  patientId      String           @db.ObjectId
+  formFieldValue FormFieldValue[]
 }
 
 type Time {
@@ -55,8 +56,10 @@ type Time {
 }
 
 type AvailabilitySlot {
-  startTime Time
-  endTime   Time
+  startTime            Time
+  endTime              Time
+  appointmentTypes     AppointmentType[]
+  appointmentReasonIds String[]
 }
 
 type TimeoffPeriod {
@@ -83,6 +86,7 @@ model Doctor {
   password                String
   email                   String?
   phoneNumber             String?
+  // sex                     Sex
   speciality              String
   medicalAssistant        MedicalAssistant[]
   hospital                Hospital                  @relation(fields: [hospitalId], references: [id])
@@ -99,10 +103,10 @@ model Patient {
   birthDate     DateTime
   maritalStatus MaritalStatus
   occupation    String?
-  // sex           Sex
+  sex           Sex
   address       String
   phoneNumber   String
-  MedicalRecord MedicalRecord[]
+  medicalRecord MedicalRecord[]
   Appointment   Appointment[]
 }
 
@@ -114,7 +118,7 @@ model MedicalAssistant {
   password    String
   phoneNumber String?
   email       String?
-  Doctor      Doctor? @relation(fields: [doctorId], references: [id])
+  doctor      Doctor? @relation(fields: [doctorId], references: [id])
   doctorId    String? @db.ObjectId
   role        Role    @default(MEDICALASSISTANT)
 }
@@ -124,7 +128,7 @@ model Hospital {
   name        String
   address     String
   phoneNumber String
-  Doctor      Doctor[]
+  doctor      Doctor[]
 }
 
 model Medicine {
@@ -223,4 +227,5 @@ model Admin {
   username  String @unique
   password  String
   role      Role   @default(ADMIN)
+
 }

@@ -17,17 +17,17 @@ import { MedicalRecordService } from 'src/medical-record/services/medical-record
 @Controller('medicalRecord')
 export class MedicalRecordController {
 
-    constructor(private readonly MedicalRecordService: MedicalRecordService) { }
+    constructor(private readonly medicalRecordService: MedicalRecordService) { }
 
     @Post()
     async addMedicalRecord(@Body() data: Prisma.MedicalRecordCreateInput): Promise<MedicalRecord> {
-        return await this.MedicalRecordService.createMedicalRecord(data);
+        return await this.medicalRecordService.createMedicalRecord(data);
     }
 
     @Get(':id')
     async MedicalRecord(@Param('id') id: string): Promise<MedicalRecord | null> {
         const args: Prisma.MedicalRecordFindUniqueArgs = { where: { id } };
-        return await this.MedicalRecordService.findOne(args);
+        return await this.medicalRecordService.findOne(args);
     }
 
     @Get()
@@ -42,7 +42,7 @@ export class MedicalRecordController {
             const parsedRange = JSON.parse(range);
             const parsedFilter = JSON.parse(filter);
 
-            // Ensure that sort is an array
+
             const sortArray = Array.isArray(parsedSort) ? parsedSort : [parsedSort];
 
             const field = sortArray[0];
@@ -51,7 +51,7 @@ export class MedicalRecordController {
             const skip = parsedRange[0];
             const take = parsedRange[1];
 
-            const { medicalRecords, count } = await this.MedicalRecordService.findMany(
+            const { medicalRecords, count } = await this.medicalRecordService.findMany(
                 { field, order },
                 { skip, take },
                 parsedFilter,
@@ -76,12 +76,12 @@ export class MedicalRecordController {
         @Body() data: Prisma.MedicalRecordUpdateArgs['data'],
     ): Promise<MedicalRecord> {
         const args: Prisma.MedicalRecordUpdateArgs = { where: { id }, data };
-        return await this.MedicalRecordService.updateOne(args);
+        return await this.medicalRecordService.updateOne(args);
     }
     @Delete(':id')
     async deleteMedicalRecord(@Param('id') id: string): Promise<{ id: string }> {
         const args: Prisma.MedicalRecordDeleteArgs = { where: { id } };
-        const deletedMedicalRecord = await this.MedicalRecordService.deleteOne(args);
+        const deletedMedicalRecord = await this.medicalRecordService.deleteOne(args);
         return deletedMedicalRecord;
     }
 }

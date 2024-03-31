@@ -13,7 +13,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 
 @Module({
-  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule, HospitalModule, AppointmentModule, MedicalRecordModule],
+  imports: [DoctorModule, PatientModule, MedicalAssistantModule, MedicineModule, HospitalModule, AppointmentModule, MedicalRecordModule,AuthModule],
   controllers: [AppController],
   providers: [AppService, {
     provide: APP_GUARD,

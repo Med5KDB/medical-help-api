@@ -5,6 +5,7 @@ const formFields: FormField[] = [
     {
         key: 'INITIALES',
         name: 'Initiales (N/P)',
+
         generalCategory: 'ASPECTS SOCIO-DEMOGRAPHIQUES',
         valueType: FormFieldValueType.TEXT
     },

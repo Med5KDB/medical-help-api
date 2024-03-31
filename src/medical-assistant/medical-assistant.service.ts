@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/lib/prisma.service';
+import { PrismaService } from '../lib/prisma.service';
 import { MedicalAssistant, Prisma } from '@prisma/client';
 import { omit } from 'lodash';
 import { ListArgs } from 'src/lib/listArg';
@@ -23,12 +23,24 @@ export class MedicalAssistantService {
       if (listArg.order) {
         const { field, order, skip, take } = listArg;
         const orderBy = { [field]: order.toLowerCase() as 'asc' | 'desc' };
+
+        let where: Prisma.MedicalAssistantWhereInput = {};
+        const filterContent = filter ? filter[Object.keys(filter)[0]] : undefined;
+        where = filterContent ? {
+          OR: [
+            { username: { contains: filterContent } },
+            { lastname: { contains: filterContent } },
+            { firstname: { contains: filterContent } },
+            { phoneNumber: { contains: filterContent } },
+            { email: { contains: filterContent } }
+          ]
+        } : {};
         allArgs = {
           ...allArgs,
           orderBy,
           skip,
           take: take - skip + 1,
-          where: filter,
+          where
         };
       } else {
         const filterName = Object.keys(filter)[0];
