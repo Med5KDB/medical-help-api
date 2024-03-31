@@ -3,14 +3,9 @@ import { FormField, FormFieldValueType } from "../dto/form-field";
 
 const formFields: FormField[] = [
     {
-        key: 'FICHE_NUMBER',
-        name: 'Numéro de la fiche',
-        generalCategory: 'ASPECTS SOCIO-DEMOGRAPHIQUES',
-        valueType: FormFieldValueType.TEXT
-    },
-    {
         key: 'INITIALES',
         name: 'Initiales (N/P)',
+
         generalCategory: 'ASPECTS SOCIO-DEMOGRAPHIQUES',
         valueType: FormFieldValueType.TEXT
     },

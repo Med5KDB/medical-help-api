@@ -20,6 +20,12 @@ enum MaritalStatus {
   WIDOWED
 }
 
+enum Role {
+  ADMIN
+  DOCTOR
+  MEDICALASSISTANT
+}
+
 enum FormFieldValueType {
   TEXT
   NUMBER
@@ -87,6 +93,7 @@ model Doctor {
   hospitalId              String                    @db.ObjectId
   AppointmentReasonDoctor AppointmentReasonDoctor[]
   Appointment             Appointment[]
+  role                    Role                      @default(DOCTOR)
 }
 
 model Patient {
@@ -113,6 +120,7 @@ model MedicalAssistant {
   email       String?
   doctor      Doctor? @relation(fields: [doctorId], references: [id])
   doctorId    String? @db.ObjectId
+  role        Role    @default(MEDICALASSISTANT)
 }
 
 model Hospital {
@@ -210,4 +218,14 @@ enum PrescriptionType {
   MEDICATION
   RADIOGRAPHY
   MEDICAL_CERTIFICATE
+}
+
+model Admin {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  firstname String
+  lastname  String
+  username  String @unique
+  password  String
+  role      Role   @default(ADMIN)
+
 }

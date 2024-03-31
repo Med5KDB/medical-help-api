@@ -14,8 +14,9 @@ async function bootstrap() {
       'Access-Control-Request-Headers',
       'range',
       'Content-Range',
+      'Authorization',
     ],
-    exposedHeaders: ['Content-Range'],
+    exposedHeaders: ['Content-Range', 'Authorization'],
   };
   app.enableCors(corsOptions);
   await app.listen(3000);
