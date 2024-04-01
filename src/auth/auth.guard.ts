@@ -38,7 +38,6 @@ export class AuthGuard implements CanActivate {
 
             request['user'] = payload;
         } catch (error) {
-            console.error('Error during JWT verification:', error);
             throw new UnauthorizedException('Authentication failed');
         }
         return true;
